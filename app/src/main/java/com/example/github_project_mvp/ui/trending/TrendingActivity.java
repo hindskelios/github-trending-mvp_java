@@ -1,14 +1,20 @@
 package com.example.github_project_mvp.ui.trending;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.github_project_mvp.GithubApp;
 import com.example.github_project_mvp.R;
+import com.example.github_project_mvp.data.model.RepoDto;
 import com.example.github_project_mvp.presenter.TrendingContract;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -17,17 +23,30 @@ public class TrendingActivity extends AppCompatActivity implements TrendingContr
     @Inject
     TrendingContract.Presenter presenter;
 
-    private TextView textView;
+    private ProgressBar progress;
+    private RecyclerView recycler;
+    private TextView errorText;
+    private RepoAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trending);
 
-        // IMPORTANT: l'id doit exister dans activity_trending.xml
-        textView = findViewById(R.id.textView);
+        progress = findViewById(R.id.progress);
+        recycler = findViewById(R.id.recycler);
+        errorText = findViewById(R.id.errorText);
 
-        ((GithubApp) getApplication()).getAppComponent().inject(this);
+        recycler.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new RepoAdapter();
+        recycler.setAdapter(adapter);
+        //
+        int space =(int)(12 * getResources().getDisplayMetrics().density);
+        recycler.addItemDecoration(new VerticalSpaceItemDecoration(space));
+
+        ((GithubApp) getApplication())
+                .getAppComponent()
+                .inject(this);
 
         presenter.attach(this);
         presenter.loadFirstPage();
@@ -41,24 +60,29 @@ public class TrendingActivity extends AppCompatActivity implements TrendingContr
 
     @Override
     public void showLoading() {
-        textView.setText("Loading...");
+        progress.setVisibility(View.VISIBLE);
+        recycler.setVisibility(View.GONE);
+        errorText.setVisibility(View.GONE);
     }
 
     @Override
     public void hideLoading() {
-        textView.setText("Loaded");
+        progress.setVisibility(View.GONE);
     }
 
     @Override
-    public void showReposCount(int count) {
-        textView.setText("Trending repositories count: " + count);
-        Toast.makeText(this, "Received: " + count, Toast.LENGTH_SHORT).show();
+    public void showRepos(List<RepoDto> repos) {
+        recycler.setVisibility(View.VISIBLE);
+        errorText.setVisibility(View.GONE);
+        adapter.setItems(repos);
     }
 
     @Override
     public void showError(String message) {
-        String msg = (message == null || message.trim().isEmpty()) ? "Unknown error" : message;
-        textView.setText(msg); // affiche l'erreur exacte sur l'écran
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        recycler.setVisibility(View.GONE);
+        errorText.setVisibility(View.VISIBLE);
+        errorText.setText(
+                message != null ? message : getString(R.string.error_generic)
+        );
     }
 }

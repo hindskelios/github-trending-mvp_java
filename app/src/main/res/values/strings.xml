@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">Github_Project_MVP</string>
+    <string name="app_name">github_project</string>
+    <string name="stars_format">⭐ %1$d</string>
+    <string name="by_owner">by %1$s</string>
+    <string name="error_generic">Unknown error</string>
+<!--    <string name="trending_title">Voici les repo GitHub les plus populaires durant les 30 derniers jours</string>-->
 </resources>

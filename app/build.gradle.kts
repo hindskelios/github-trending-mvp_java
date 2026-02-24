@@ -48,6 +48,7 @@ dependencies {
     annotationProcessor ("com.google.dagger:dagger-compiler:2.59.2")
     implementation ("com.github.bumptech.glide:glide:5.0.5")
     annotationProcessor ("com.github.bumptech.glide:compiler:5.0.5")
+    implementation("com.google.android.material:material:1.12.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

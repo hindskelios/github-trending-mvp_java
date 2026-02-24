@@ -32,14 +32,12 @@ public class TrendingPresenter implements TrendingContract.Presenter {
     public void loadFirstPage() {
         if (view == null) return;
 
-        view.showLoading();
-
         trendingRepo.getTrendingRepos(1, new RepoCallback<List<RepoDto>>() {
             @Override
             public void onSuccess(List<RepoDto> data) {
                 if (view == null) return;
                 view.hideLoading();
-                view.showReposCount(data == null ? 0 : data.size());
+                view.showRepos(data);
             }
 
             @Override

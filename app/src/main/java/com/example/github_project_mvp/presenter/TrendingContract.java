@@ -1,10 +1,14 @@
 package com.example.github_project_mvp.presenter;
 
+import com.example.github_project_mvp.data.model.RepoDto;
+import java.util.List;
+
 public interface TrendingContract {
+
     interface View {
         void showLoading();
         void hideLoading();
-        void showReposCount(int count);
+        void showRepos(List<RepoDto> repos);
         void showError(String message);
     }
 
