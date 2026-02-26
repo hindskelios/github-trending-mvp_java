@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">github_project</string>
+    <string name="app_name">Repo Hub</string>
     <string name="stars_format">⭐ %1$d</string>
     <string name="by_owner">by %1$s</string>
     <string name="error_generic">Unknown error</string>
