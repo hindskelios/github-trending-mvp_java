@@ -10,8 +10,11 @@ import javax.inject.Inject;
 
 public class TrendingPresenter implements TrendingContract.Presenter {
 
-    private final TrendingRepo trendingRepo;
     private TrendingContract.View view;
+    private final TrendingRepo trendingRepo;
+
+    private boolean isLoading = false;
+    private int currentPage = 1;
 
     @Inject
     public TrendingPresenter(TrendingRepo trendingRepo) {
@@ -25,26 +28,58 @@ public class TrendingPresenter implements TrendingContract.Presenter {
 
     @Override
     public void detach() {
-        view = null;
+        this.view = null; // Prevent memory leaks
     }
 
     @Override
     public void loadFirstPage() {
+        if (isLoading) return;
+        currentPage = 1;
+        loadRepos(currentPage);
+    }
+
+    @Override
+    public void loadNextPage() {
+        if (isLoading) return;
+        currentPage++;
+        loadRepos(currentPage);
+    }
+
+    private void loadRepos(final int page) {
         if (view == null) return;
 
-        trendingRepo.getTrendingRepos(1, new RepoCallback<List<RepoDto>>() {
+        isLoading = true;
+        if (page == 1) {
+            view.showLoading();
+        }
+
+        trendingRepo.getTrendingRepos(page, new RepoCallback<List<RepoDto>>() {
             @Override
-            public void onSuccess(List<RepoDto> data) {
+            public void onSuccess(List<RepoDto> repos) {
                 if (view == null) return;
-                view.hideLoading();
-                view.showRepos(data);
+                isLoading = false;
+
+                if (page == 1) {
+                    view.hideLoading();
+                    view.showRepos(repos);
+                } else {
+                    view.addRepos(repos);
+                }
             }
 
             @Override
             public void onError(Throwable t) {
                 if (view == null) return;
-                view.hideLoading();
-                view.showError(t == null ? "Unknown error" : t.getMessage());
+                isLoading = false;
+
+                if (page == 1) {
+                    view.hideLoading();
+                    view.showError(t.getMessage());
+                } else {
+                    // Revert page increment on failure for next pages
+                    currentPage--;
+                    view.showPageLoadError(t.getMessage());
+                }
             }
         });
     }

@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +29,7 @@ public class TrendingActivity extends AppCompatActivity implements TrendingContr
     private RecyclerView recycler;
     private TextView errorText;
     private RepoAdapter adapter;
+    private LinearLayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +40,15 @@ public class TrendingActivity extends AppCompatActivity implements TrendingContr
         recycler = findViewById(R.id.recycler);
         errorText = findViewById(R.id.errorText);
 
-        recycler.setLayoutManager(new LinearLayoutManager(this));
+        layoutManager = new LinearLayoutManager(this);
+        recycler.setLayoutManager(layoutManager);
         adapter = new RepoAdapter();
         recycler.setAdapter(adapter);
-        //
-        int space =(int)(12 * getResources().getDisplayMetrics().density);
+
+        int space = (int) (12 * getResources().getDisplayMetrics().density);
         recycler.addItemDecoration(new VerticalSpaceItemDecoration(space));
+
+        addScrollListener();
 
         ((GithubApp) getApplication())
                 .getAppComponent()
@@ -50,6 +56,22 @@ public class TrendingActivity extends AppCompatActivity implements TrendingContr
 
         presenter.attach(this);
         presenter.loadFirstPage();
+    }
+
+    private void addScrollListener() {
+        recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int visibleItemCount = layoutManager.getChildCount();
+                int totalItemCount = layoutManager.getItemCount();
+                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
+                    presenter.loadNextPage();
+                }
+            }
+        });
     }
 
     @Override
@@ -78,11 +100,21 @@ public class TrendingActivity extends AppCompatActivity implements TrendingContr
     }
 
     @Override
+    public void addRepos(List<RepoDto> repos) {
+        adapter.addItems(repos);
+    }
+
+    @Override
     public void showError(String message) {
         recycler.setVisibility(View.GONE);
         errorText.setVisibility(View.VISIBLE);
         errorText.setText(
                 message != null ? message : getString(R.string.error_generic)
         );
+    }
+
+    @Override
+    public void showPageLoadError(String message) {
+        Toast.makeText(this, message != null ? message : getString(R.string.error_generic), Toast.LENGTH_SHORT).show();
     }
 }

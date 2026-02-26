@@ -12,6 +12,7 @@ public interface GitHubApi {
             @Query("q") String query,
             @Query("sort") String sort,
             @Query("order") String order,
-            @Query("page") int page
+            @Query("page") int page,
+            @Query("per_page") int perPage
     );
 }

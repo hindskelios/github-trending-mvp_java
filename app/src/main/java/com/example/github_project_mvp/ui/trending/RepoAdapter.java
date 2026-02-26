@@ -26,6 +26,13 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoVH> {
         notifyDataSetChanged();
     }
 
+    public void addItems(List<RepoDto> newItems) {
+        if (newItems == null) return;
+        int startPosition = items.size();
+        items.addAll(newItems);
+        notifyItemRangeInserted(startPosition, newItems.size());
+    }
+
     @NonNull
     @Override
     public RepoVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

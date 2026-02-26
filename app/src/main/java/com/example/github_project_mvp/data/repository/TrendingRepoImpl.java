@@ -32,7 +32,7 @@ public class TrendingRepoImpl implements TrendingRepo {
         String since = getDateMinusDays(30); // YYYY-MM-DD
         String query = "created:>" + since;
 
-        Call<SearchResponseDto> call = gitHubApi.searchRepositories(query, "stars", "desc", page);
+        Call<SearchResponseDto> call = gitHubApi.searchRepositories(query, "stars", "desc", page, 30);
 
         call.enqueue(new Callback<SearchResponseDto>() {
             @Override

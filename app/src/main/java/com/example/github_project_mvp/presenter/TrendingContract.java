@@ -9,12 +9,15 @@ public interface TrendingContract {
         void showLoading();
         void hideLoading();
         void showRepos(List<RepoDto> repos);
+        void addRepos(List<RepoDto> repos); // Pour les pages suivantes
         void showError(String message);
+        void showPageLoadError(String message);
     }
 
     interface Presenter {
         void attach(View view);
         void detach();
         void loadFirstPage();
+        void loadNextPage();
     }
 }
