@@ -93,6 +93,16 @@ public class TrendingActivity extends AppCompatActivity implements TrendingContr
     }
 
     @Override
+    public void showPaginationLoading() {
+        adapter.addLoadingFooter();
+    }
+
+    @Override
+    public void hidePaginationLoading() {
+        adapter.removeLoadingFooter();
+    }
+
+    @Override
     public void showRepos(List<RepoDto> repos) {
         recycler.setVisibility(View.VISIBLE);
         errorText.setVisibility(View.GONE);

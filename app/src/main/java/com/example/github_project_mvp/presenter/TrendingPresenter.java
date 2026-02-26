@@ -51,6 +51,8 @@ public class TrendingPresenter implements TrendingContract.Presenter {
         isLoading = true;
         if (page == 1) {
             view.showLoading();
+        } else {
+            view.showPaginationLoading();
         }
 
         trendingRepo.getTrendingRepos(page, new RepoCallback<List<RepoDto>>() {
@@ -63,6 +65,7 @@ public class TrendingPresenter implements TrendingContract.Presenter {
                     view.hideLoading();
                     view.showRepos(repos);
                 } else {
+                    view.hidePaginationLoading();
                     view.addRepos(repos);
                 }
             }
@@ -78,6 +81,7 @@ public class TrendingPresenter implements TrendingContract.Presenter {
                 } else {
                     // Revert page increment on failure for next pages
                     currentPage--;
+                    view.hidePaginationLoading();
                     view.showPageLoadError(t.getMessage());
                 }
             }

@@ -8,8 +8,10 @@ public interface TrendingContract {
     interface View {
         void showLoading();
         void hideLoading();
+        void showPaginationLoading();
+        void hidePaginationLoading();
         void showRepos(List<RepoDto> repos);
-        void addRepos(List<RepoDto> repos); // Pour les pages suivantes
+        void addRepos(List<RepoDto> repos);
         void showError(String message);
         void showPageLoadError(String message);
     }
